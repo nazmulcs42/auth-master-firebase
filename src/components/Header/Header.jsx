@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 const Header = () => {
   return (
-    <div className="navbar bg-primary text-primary-content bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-700">
+    <div className="navbar bg-primary text-primary-content bg-gradient-to-r from-indigo-700 via-purple-400 to-pink-700">
       <div className="flex-1">
         <a className="btn btn-ghost normal-case text-xl">Master Bari</a>
         <Link className="btn btn-ghost normal-case text-md" to="/">Home</Link>
