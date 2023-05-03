@@ -1,37 +1,54 @@
-import React, { useState, useRef } from 'react'
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
-import app from '../../../../firebase.config';
+import React, { useState, useRef, useContext } from 'react'
 import { Link } from 'react-router-dom';
+import { sendPasswordResetEmail } from "firebase/auth";
+import { AuthContext } from '../../../providers/AuthProviders';
 
-const auth = getAuth(app);
 
 const Login = () => {
-  const[user, setUser] = useState(null);
+  const { user, signIn, signInWithGitHub, signInWithGoogle } = useContext(AuthContext);
   const [error, setError] = useState('');
   const emailRef = useRef();
+
+  const handleGoogleSignIn = () => {
+    signInWithGoogle()
+    .then(result => {
+      console.log(result)
+    })
+    .catch(error => {
+      console.log(error.message)
+    })
+  }
+
+  const handleGitHubSignIn = () => {
+    signInWithGitHub()
+    .then(result => {
+      console.log(result)
+      
+    }).catch(error => {
+      console.log(error)
+    });
+  }
 
   const handleFormSubmit = event => {
     event.preventDefault();
     const email = event.target.email.value;
     const password = event.target.password.value;
 
-    signInWithEmailAndPassword(auth, email, password)
-    .then(res => {
-      const loggedUser = res.user;
-      console.log(loggedUser);
-      if(!loggedUser.emailVerified) {
-        setError("Please verify your email address first.");
-        return;
-      }
-      setUser(loggedUser);
-      setError('');
-      event.target.reset();
-    })
-    .catch(err => {
-      console.log(err.message);
-      setUser(null);
-      setError(err.message);
-    })
+    signIn(email, password)
+      .then(res => {
+        const loggedUser = res.user;
+        console.log(loggedUser);
+        if(!loggedUser.emailVerified) {
+          setError("Please verify your email address first.");
+          return;
+        }
+        setError('');
+        event.target.reset();
+      })
+      .catch(err => {
+        console.log(err.message);
+        setError(err.message);
+      })
   }
 
   const handleForgotPassword = () => {
@@ -84,6 +101,10 @@ const Login = () => {
               </div>
             </form>
           </div>
+        </div>
+        <div className='d-flex'>
+          <button className="btn btn-primary bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 m-1" onClick={handleGoogleSignIn}>Google Login</button>
+          <button className="btn btn-primary bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 m-1" onClick={handleGitHubSignIn}>GitHub Login</button> 
         </div>
       </div>
     </div>

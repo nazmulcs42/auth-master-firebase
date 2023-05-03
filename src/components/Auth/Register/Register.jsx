@@ -1,17 +1,17 @@
-import React, { useState } from 'react'
-import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
-import app from '../../../../firebase.config';
+import React, { useContext, useState } from 'react'
+import { sendEmailVerification, updateProfile } from "firebase/auth";
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../../../providers/AuthProviders';
 
-const auth = getAuth(app);
 
 const Register = () => {
+  const { user, createUser } = useContext(AuthContext);
   const [error, setError] = useState('');
-  const [success, setSeccess] = useState('');
-
+  const [success, setSuccess] = useState('');
+  
   const handleFormSubmit = event => {
     event.preventDefault();
-    setSeccess('');
+    setSuccess('');
     const email = event.target.email.value;
     const password = event.target.password.value;
     const userName = event.target.name.value;
@@ -29,27 +29,28 @@ const Register = () => {
       return;
     }
 
-    createUserWithEmailAndPassword(auth, email, password)
-    .then(res => {
-      const loggedUser = res.user;
-      setUserName(loggedUser, userName);
-      console.log(loggedUser);
-      setError('');
-      setSeccess("Your account has been created successfully.");
-      event.target.reset();
-      verifyEmail(loggedUser);
-    })
-    .catch(err => {
-      console.log(err.message);
-      setSeccess('');
-      setError(err.message);
-    })
+    createUser(email, password)
+      .then(res => {
+        const loggedUser = res.user;
+        setUserName(loggedUser, userName);
+        console.log(loggedUser);
+        setError('');
+        setSuccess("Your account has been created successfully.");
+        event.target.reset();
+        verifyEmail(loggedUser);
+      })
+      .catch(err => {
+        console.log(err.message);
+        setSuccess('');
+        setError(err.message);
+      })
 
   }
 
   const setUserName = (loggedUser, userName) => {
     updateProfile(loggedUser, {
-      displayName: userName
+      displayName: userName,
+      photoURL: "https://cdn.pixabay.com/photo/2015/03/04/22/35/avatar-659651_960_720.png"
     }).then(() => {
       console.log("Profile updated")
     }).catch((error) => {
