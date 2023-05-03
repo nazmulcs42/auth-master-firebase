@@ -1,13 +1,17 @@
 import React, { useState, useRef, useContext } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { sendPasswordResetEmail } from "firebase/auth";
 import { AuthContext } from '../../../providers/AuthProviders';
 
 
 const Login = () => {
-  const { user, signIn, signInWithGitHub, signInWithGoogle } = useContext(AuthContext);
+  const { signIn, signInWithGitHub, signInWithGoogle } = useContext(AuthContext);
   const [error, setError] = useState('');
+  const location = useLocation();
   const emailRef = useRef();
+  const navigate = useNavigate();
+
+  const from = location.state?.from?.pathname || "/";
 
   const handleGoogleSignIn = () => {
     signInWithGoogle()
@@ -44,6 +48,7 @@ const Login = () => {
         }
         setError('');
         event.target.reset();
+        navigate(from, {replace: true});
       })
       .catch(err => {
         console.log(err.message);
@@ -93,7 +98,7 @@ const Login = () => {
                 <input type="password" placeholder="password" name='password' className="input input-bordered" required />
                 <label className="label">
                   <Link to="/register" className="label-text-alt link link-hover" >New to this site?</Link>
-                  <a href="javascript:void(0)" className="label-text-alt link link-hover" onClick={handleForgotPassword}>Forgot password?</a>
+                  <a href="#" className="label-text-alt link link-hover" onClick={handleForgotPassword}>Forgot password?</a>
                 </label>
               </div>
               <div className="form-control mt-6">
